@@ -14,6 +14,7 @@
 - Provide a possible sentence structure
 - The table of vocabulary should only have the following columns: Japanese, Romaji, English
 - Do not use Romaji when showing Japanese text, except in the table of vocabulary
+- Make sure the Japanese column is not blank
 
 ## Examples
 Here are examples of user input and assitant output: 

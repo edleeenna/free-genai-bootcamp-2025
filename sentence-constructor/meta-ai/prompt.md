@@ -92,4 +92,4 @@ Your turn! Can you try to assemble the sentence using the vocabulary and structu
 </example>
 
 ## Student Input: 
-Bears are at the door, did you leave the garbage out?
+Did you see the raven this morning? They were looking at our garden.

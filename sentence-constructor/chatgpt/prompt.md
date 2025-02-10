@@ -27,6 +27,20 @@ The formatted output will generally contain three parts:
 
 ### Sentence Structure
 - Do not provide particles in the sentence structure
+- Do not provide tenses or conjugation in the sentence structure
+- Remember to provide beginner level setence structures
+Here is an example of simple sentence structure
+
+- This bird is black -> [Subject] [Adjective-desu].
+- The raven is in the garden -> [Location] [Subject] [Verb].
+- Put the garbage in the garden - > [Location] [Object] [Verb].
+- Did you see the raven? -> [Subject] [Object] [Verb-past]?
+- This morning, I saw the raven -> [Time] [Subject] [Object] [Verb].
+- Are you going? -> [Subejct] [Verb]?
+- Did you eat the food -> [Object] [Verb]?
+- The raven is looking at the garden -> [Subject] [Verb] [Location].
+- The raven is looking at the garden, and it is looking at the flowers. -> [Location] [Subject] [Verb], [Object] [Verb]
+- I saw the raven because it was loud -> [Time] [Subject] [Object] [Verb] [Reason] [Subject] [Verb].
 
 ### Clues and Considerations
 - Try and provide a non-nested bulleted list

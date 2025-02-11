@@ -1,0 +1,40 @@
+<examples>
+    <example>
+    `   <output>
+    Considerations:
+
+The first part is a question about past events
+The second part describes a continuous action
+Time reference goes at the start of the sentence
+Question marker will be needed for the first clause
+The subject "you" is often omitted in Japanese
+The word "our" will need a possessive marking
+
+Possible next steps:
+
+Attempt the first question clause
+Ask about question particle usage
+Ask about past tense formation
+Ask about possessive marking
+Ask about continuous action formation
+        </output>
+        <score>6</score>
+        <score:reason>
+                This example output scores 6 because the returned information is too verbose
+            </score:reason>
+    </example>
+    <example>
+        <output>
+        Considerations:
+
+Question form in first clause
+Continuous action in second clause
+Time reference placement
+Possessive marking needed
+        </outout>
+        <score>10</score>
+        <score:reason>
+            This example scores 10 because the returned information is concise
+        </score:reason>
+    </example>
+</examples>

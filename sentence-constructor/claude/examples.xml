@@ -1,4 +1,5 @@
-<example xmlns:user="http://example.com/user" xmlns:assistant="http://example.com/assistant">
+<examples xmlns:user="http://example.com/user" xmlns:assistant="http://example.com/assistant">
+    <example>
     <user:input>
         Bears are at the door, did you leave the garbage out?
     </user:input>
@@ -70,3 +71,4 @@ Your turn! Can you try to assemble the sentence using the vocabulary and structu
     - ask clues about verb conjugation
     </assistant:output>
 </example>
+</examples>

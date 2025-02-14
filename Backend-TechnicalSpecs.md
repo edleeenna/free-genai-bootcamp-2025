@@ -17,6 +17,39 @@ You have been tasked with creating the backend API of the application.
 - THere will be no authentication or authorisation
 - everything will be treated as a single user
 
+## Directory Structure
+
+```text
+backend-fastapi/
+├── app/
+│   ├── __init__.py
+│   ├── main.py
+│   ├── models.py
+│   ├── schemas.py
+│   ├── crud.py
+│   ├── database.py
+│   └── routers/
+│       ├── __init__.py
+│       ├── words.py
+│       ├── words_groups.py
+│       ├── groups.py
+│       ├── study_sessions.py
+│       └── study_activities.py
+├── db/
+│   ├── migrations/
+│   └── seeds/
+├── tests/
+│   ├── __init__.py
+│   ├── test_main.py
+│   ├── test_words.py
+│   ├── test_words_groups.py
+│   ├── test_groups.py
+│   ├── test_study_sessions.py
+│   └── test_study_activities.py
+├── words.db
+├── requirements.txt
+└── README.md
+```
 ## Database Schema
 
 Our database will be a single sqlite database called `words.db` that will be in the root of the project folder of `backend-fastapi`

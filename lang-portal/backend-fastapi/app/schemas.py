@@ -105,3 +105,28 @@ class WordReviewItems(WordReviewItemsBase):
 
     class ConfigDict:
         from_attributes = True
+
+# dashboard/last_study_session
+class LastStudySession(BaseModel):
+    id: int
+    group_id: int
+    created_at: datetime
+    study_activity_id: int
+    group_name: str
+
+    class ConfigDict:
+        from_attributes = True
+
+# dashboard/study_progress
+class StudyProgress(BaseModel):
+    total_words_studied: int
+    total_available_words: int
+
+# dashboard/quick_stats
+class QuickStats(BaseModel):
+    success_rate: float
+    total_study_sessions: int
+    total_active_groups: int
+    study_streak: int
+    words_learned: int
+    words_in_progress: int

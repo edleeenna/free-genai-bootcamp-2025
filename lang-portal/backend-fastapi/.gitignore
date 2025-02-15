@@ -68,4 +68,5 @@ instance/
 
 # Database
 words.db
+./words.db
 test.db

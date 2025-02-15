@@ -28,7 +28,7 @@ class StudySession(Base):
     group_id = Column(Integer, ForeignKey('groups.id'))
     session_name = Column(String, index=True)
     created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
-    study_activity_id = Column(Integer, nullable=False)
+    study_activity_id = Column(Integer, ForeignKey('study_activities.id'), nullable=False)
 
 class StudyActivity(Base):
     __tablename__ = 'study_activities'
@@ -44,4 +44,3 @@ class WordReviewItems(Base):
     word_id = Column(Integer, ForeignKey('words.id'), nullable=False)
     correct = Column(Boolean, nullable=False)
     created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
-    

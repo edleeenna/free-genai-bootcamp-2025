@@ -1,16 +1,28 @@
+import os
 import pytest
 from fastapi.testclient import TestClient
 from app.main import app
-from app.database import SessionLocal, Base, engine
-from app.models import Word, WordGroup, Group, StudySession, StudyActivity, WordReviewItems
+from app.database import Base, get_db, SessionLocal, engine
+
+# Set TESTING flag to use the test database
+os.environ["TESTING"] = "1"
 
 # Create a TestClient instance
 client = TestClient(app)
 
-# Create the database tables
+# Create test database tables
 Base.metadata.create_all(bind=engine)
 
-# Fixture to provide a database session for tests
+# Dependency override to use test database
+def override_get_db():
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()
+
+app.dependency_overrides[get_db] = override_get_db
+
 @pytest.fixture(scope="module")
 def db_session():
     db = SessionLocal()

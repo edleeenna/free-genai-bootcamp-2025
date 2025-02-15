@@ -89,18 +89,18 @@ class StudyActivity(StudyActivityBase):
         orm_mode = True
 
 # Base schema for WordReviewItem
-class WordReviewItemBase(BaseModel):
+class WordReviewItemsBase(BaseModel):
     study_session_id: int
     word_id: int
     correct: bool
     created_at: datetime
 
-# Schema for creating a new WordReviewItem
-class WordReviewItemCreate(WordReviewItemBase):
+# Schema for creating a new WordReviewItems
+class WordReviewItemsCreate(WordReviewItemsBase):
     pass
 
-# Schema for reading a WordReviewItem, includes id and ORM mode
-class WordReviewItem(WordReviewItemBase):
+# Schema for reading a WordReviewItems, includes id and ORM mode
+class WordReviewItems(WordReviewItemsBase):
     id: int
 
     class Config:

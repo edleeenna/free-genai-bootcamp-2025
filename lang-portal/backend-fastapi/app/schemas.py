@@ -1,3 +1,4 @@
+from typing import List
 from pydantic import BaseModel
 from datetime import datetime
 
@@ -48,10 +49,15 @@ class StudySession(StudySessionBase):
 
 # Base schema for Word
 class WordBase(BaseModel):
-    kanji: str
+    japanese: str
     romaji: str
     english: str
-    parts: str = None
+    correct_count: int
+    wrong_count: int
+
+    class ConfigDict:
+        from_attributes = True
+
 
 # Schema for creating a new Word
 class WordCreate(WordBase):
@@ -79,6 +85,10 @@ class WordGroup(WordGroupBase):
 
     class ConfigDict:
         from_attributes = True
+
+class WordsResponse(BaseModel):
+    items: List[Word]
+    pagination: Pagination
 
 # Base schema for StudyActivity
 class StudyActivityBase(BaseModel):

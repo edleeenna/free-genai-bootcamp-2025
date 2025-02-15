@@ -6,10 +6,11 @@ from app.database import Base
 class Word(Base):
     __tablename__ = 'words'
     id = Column(Integer, primary_key=True, index=True, autoincrement=True)
-    kanji = Column(String, index=True, nullable=False)
+    japanese = Column(String, index=True, nullable=False)
     romaji = Column(String, index=True, nullable=False)
     english = Column(String, index=True, nullable=False)
-    parts = Column(String)
+    correct_count = Column(Integer, default=0)
+    wrong_count = Column(Integer, default=0)
 
 class WordGroup(Base):
     __tablename__ = 'words_groups'

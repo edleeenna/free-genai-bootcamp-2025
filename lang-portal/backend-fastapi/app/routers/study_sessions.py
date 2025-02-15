@@ -1,3 +1,4 @@
+from typing import List
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from app import crud, models, schemas
@@ -29,3 +30,12 @@ def read_study_session(study_session_id: int, db: Session = Depends(get_db)):
     if db_study_session is None:
         raise HTTPException(status_code=404, detail="Study session not found")
     return db_study_session
+
+@router.get("/study_sessions/{study_session_id}/words", response_model=List[schemas.WordBase])
+def get_words_for_study_session(study_session_id: int, page: int = 1, items_per_page: int = 20, db: Session = Depends(get_db)):
+    words = crud.get_words_for_study_session(db, study_session_id, page, items_per_page)
+    print(words)
+    if not words:
+        raise HTTPException(status_code=404, detail="Words not found")
+
+    return words

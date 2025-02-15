@@ -33,9 +33,9 @@ def db_session():
 
 # Test the /words/ endpoint
 def test_create_word(db_session):
-    response = client.post("/words/", json={"kanji": "例", "romaji": "rei", "english": "example", "parts": "例"})
+    response = client.post("/words/", json={"japanese": "例", "romaji": "rei", "english": "example", "correct_count": "1", "wrong_count": "1"})
     assert response.status_code == 200
-    assert response.json()["kanji"] == "例"
+    assert response.json()["japanese"] == "例"
 
 def test_read_words(db_session):
     response = client.get("/words/")
@@ -45,7 +45,7 @@ def test_read_words(db_session):
 def test_read_word(db_session):
     response = client.get("/words/1")
     assert response.status_code == 200
-    assert response.json()["kanji"] == "例"
+    assert response.json()["japanese"] == "例"
 
 # Test the /groups/ endpoint
 def test_create_group(db_session):

@@ -1,4 +1,5 @@
 from datetime import datetime, timedelta
+from fastapi import HTTPException
 from sqlalchemy import case, distinct, func, text
 from sqlalchemy.orm import Session, aliased
 from app import models, schemas
@@ -67,9 +68,37 @@ def create_group(db: Session, group: schemas.GroupCreate):
     db.refresh(db_group)  # Refresh the instance to get any auto-generated fields
     return db_group
 
-# CRUD function to get a single study session by its ID
 def get_study_session(db: Session, study_session_id: int):
-    return db.query(models.StudySession).filter(models.StudySession.id == study_session_id).first()
+    result = (
+        db.query(
+            models.StudySession.id,
+            models.StudySession.group_id,
+            models.StudySession.created_at.label("start_time"),
+            models.StudySession.study_activity_id.label("activity_id"),
+            # Assuming end_time is the same as created_at for this example
+            models.StudySession.created_at.label("end_time"),
+            models.Group.name.label("group_name"),
+            func.count(models.WordReviewItems.id).label("review_items_count")
+        )
+        .join(models.Group)
+        .outerjoin(models.WordReviewItems, models.WordReviewItems.study_session_id == models.StudySession.id)
+        .filter(models.StudySession.id == study_session_id)
+        .group_by(models.StudySession.id, models.Group.id)
+        .first()
+    )
+    
+    if result:
+        # Map the tuple result to a dictionary that matches your schema
+        return {
+            "id": result.id,
+            "group_id": result.group_id,
+            "group_name": result.group_name,
+            "activity_id": result.activity_id,
+            "start_time": result.start_time,
+            "end_time": result.end_time,
+            "review_items_count": result.review_items_count
+        }
+    return None
 
 # CRUD function to get a list of study sessions with paginationfrom sqlalchemy import func
 def get_study_sessions(db: Session, skip: int = 0, limit: int = 10):
@@ -185,6 +214,38 @@ def get_last_study_session(db: Session):
         }
     return None
 
+def get_words_for_study_session(db: Session, study_session_id: int, page: int = 1, items_per_page: int = 20):
+    # Calculate offset for pagination
+    offset = (page - 1) * items_per_page
+    
+    # Fetch words for the study session
+    words = (
+        db.query(
+            models.Word.id,
+            models.Word.japanese,
+            models.Word.romaji,
+            models.Word.english,
+            models.Word.correct_count,
+            models.Word.wrong_count
+        )
+        .join(models.WordReviewItems, models.WordReviewItems.word_id == models.Word.id)
+        .filter(models.WordReviewItems.study_session_id == study_session_id)
+        .offset(offset)
+        .limit(items_per_page)
+        .all()
+    )
+    
+      # Return a list of WordBase schemas, but use tuple indexing to access columns
+    return [
+        schemas.WordBase(
+            japanese=word[1],  # word[1] corresponds to models.Word.japanese
+            romaji=word[2],    # word[2] corresponds to models.Word.romaji
+            english=word[3],   # word[3] corresponds to models.Word.english
+            correct_count=word[4],  # word[4] corresponds to models.Word.correct_count
+            wrong_count=word[5]     # word[5] corresponds to models.Word.wrong_count
+        )
+        for word in words
+    ]
 # Function to calculate study progress for the dashboard
 def get_study_progress(db: Session):
     total_words_studied = db.query(func.count(func.distinct(models.WordReviewItems.word_id))).scalar()  # Count distinct studied words

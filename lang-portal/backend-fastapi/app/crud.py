@@ -14,6 +14,19 @@ def create_word(db: Session, word: schemas.WordCreate):
     db.refresh(db_word)
     return db_word
 
+def get_word_review_item(db: Session, item_id: int):
+    return db.query(models.WordReviewItem).filter(models.WordReviewItem.id == item_id).first()
+
+def get_word_review_items(db: Session, skip: int = 0, limit: int = 10):
+    return db.query(models.WordReviewItem).offset(skip).limit(limit).all()
+
+def create_word_review_item(db: Session, item: schemas.WordReviewItemCreate):
+    db_item = models.WordReviewItem(**item.dict())
+    db.add(db_item)
+    db.commit()
+    db.refresh(db_item)
+    return db_item
+
 # Define similar CRUD functions for WordGroup, Group, StudySession, and StudyActivity
 def get_word_group(db: Session, word_group_id: int):
     return db.query(models.WordGroup).filter(models.WordGroup.id == word_group_id).first()

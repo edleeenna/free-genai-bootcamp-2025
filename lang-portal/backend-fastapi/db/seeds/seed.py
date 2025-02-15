@@ -30,9 +30,10 @@ def seed_data():
     db.add_all(word_groups)
 
     # Add initial data for study sessions
+
     study_sessions = [
         StudySession(group_id=1, session_name="Session 1", created_at=datetime.now(), study_activity_id=1),
-        StudySession(group_id=2, session_name="Session 2", created_at=datetime.now(), study_activity_id=1),
+        StudySession(group_id=2, session_name="Session 2", created_at=datetime.now(), study_activity_id=3),
     ]
     db.add_all(study_sessions)
 

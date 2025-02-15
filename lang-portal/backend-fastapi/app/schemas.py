@@ -24,6 +24,7 @@ class StudySessionBase(BaseModel):
     group_id: int
     session_name: str
     created_at: datetime
+    study_activity_id: int
 
 # Schema for creating a new StudySession
 class StudySessionCreate(StudySessionBase):

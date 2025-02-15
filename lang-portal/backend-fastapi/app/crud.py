@@ -21,7 +21,7 @@ def get_word_review_items(db: Session, skip: int = 0, limit: int = 10):
     return db.query(models.WordReviewItems).offset(skip).limit(limit).all()
 
 def create_word_review_item(db: Session, item: schemas.WordReviewItemsCreate):
-    db_item = models.WordReviewItems(**item.dict())
+    db_item = models.WordReviewItems(**item.model_dump())
     db.add(db_item)
     db.commit()
     db.refresh(db_item)

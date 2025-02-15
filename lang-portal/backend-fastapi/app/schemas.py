@@ -1,8 +1,8 @@
 from pydantic import BaseModel
 from datetime import datetime
 
-class Config:
-    orm_mode = True
+class ConfigDict:
+    from_attributes = True
 
 # Base schema for Group
 class GroupBase(BaseModel):
@@ -16,8 +16,8 @@ class GroupCreate(GroupBase):
 class Group(GroupBase):
     id: int
 
-    class Config:
-        orm_mode = True
+    class ConfigDict:
+        from_attributes = True
 
 # Base schema for StudySession
 class StudySessionBase(BaseModel):
@@ -34,8 +34,8 @@ class StudySessionCreate(StudySessionBase):
 class StudySession(StudySessionBase):
     id: int
 
-    class Config:
-        orm_mode = True
+    class ConfigDict:
+        from_attributes = True
 
 # Base schema for Word
 class WordBase(BaseModel):
@@ -52,8 +52,8 @@ class WordCreate(WordBase):
 class Word(WordBase):
     id: int
 
-    class Config:
-        orm_mode = True
+    class ConfigDict:
+        from_attributes = True
 
 # Base schema for WordGroup
 class WordGroupBase(BaseModel):
@@ -68,8 +68,8 @@ class WordGroupCreate(WordGroupBase):
 class WordGroup(WordGroupBase):
     id: int
 
-    class Config:
-        orm_mode = True
+    class ConfigDict:
+        from_attributes = True
 
 # Base schema for StudyActivity
 class StudyActivityBase(BaseModel):
@@ -85,8 +85,8 @@ class StudyActivityCreate(StudyActivityBase):
 class StudyActivity(StudyActivityBase):
     id: int
 
-    class Config:
-        orm_mode = True
+    class ConfigDict:
+        from_attributes = True
 
 # Base schema for WordReviewItem
 class WordReviewItemsBase(BaseModel):
@@ -103,5 +103,5 @@ class WordReviewItemsCreate(WordReviewItemsBase):
 class WordReviewItems(WordReviewItemsBase):
     id: int
 
-    class Config:
-        orm_mode = True
+    class ConfigDict:
+        from_attributes = True

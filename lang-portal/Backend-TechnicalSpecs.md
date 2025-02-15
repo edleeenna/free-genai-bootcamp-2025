@@ -30,8 +30,10 @@ backend-fastapi/
 │   ├── database.py
 │   └── routers/
 │       ├── __init__.py
+|       ├── dashboard.py
 │       ├── words.py
 │       ├── words_groups.py
+|       ├── word_review_items.py
 │       ├── groups.py
 │       ├── study_sessions.py
 │       └── study_activities.py

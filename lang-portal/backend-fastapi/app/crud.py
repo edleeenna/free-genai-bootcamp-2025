@@ -71,9 +71,39 @@ def create_group(db: Session, group: schemas.GroupCreate):
 def get_study_session(db: Session, study_session_id: int):
     return db.query(models.StudySession).filter(models.StudySession.id == study_session_id).first()
 
-# CRUD function to get a list of study sessions with pagination
+# CRUD function to get a list of study sessions with paginationfrom sqlalchemy import func
 def get_study_sessions(db: Session, skip: int = 0, limit: int = 10):
-    return db.query(models.StudySession).offset(skip).limit(limit).all()
+    results = (
+        db.query(
+            models.StudySession.id,
+            models.StudySession.group_id,
+            models.StudySession.created_at,
+            models.StudySession.study_activity_id,
+            models.Group.name.label("group_name"),
+            func.count(models.WordReviewItems.id).label("review_items_count")  # Count the review items
+        )
+        .join(models.Group)  # Join with Group to get group details
+        .outerjoin(models.WordReviewItems, models.WordReviewItems.study_session_id == models.StudySession.id)  # LEFT JOIN with WordReviewItems
+        .group_by(models.StudySession.id, models.Group.id)  # Group by study session and group to get counts
+        .order_by(models.StudySession.created_at.desc())  # Order by created_at in descending order
+        .offset(skip)  # Apply pagination offset
+        .limit(limit)  # Apply pagination limit
+        .all()  # Fetch the results
+    )
+
+    # Ensure each result is correctly mapped to the StudySessionBase schema
+    return [
+        schemas.StudySessionBase(
+            id=session.id,
+            group_id=session.group_id,
+            group_name=session.group_name,
+            activity_id=session.study_activity_id,
+            start_time=session.created_at,  # Ensure start_time is set correctly
+            end_time=session.created_at,  # Placeholder for end_time
+            review_items_count=session.review_items_count,
+        )
+        for session in results
+    ]
 
 # CRUD function to create a new study session
 def create_study_session(db: Session, study_session: schemas.StudySessionCreate):
@@ -99,6 +129,44 @@ def create_study_activity(db: Session, study_activity: schemas.StudyActivityCrea
     db.refresh(db_study_activity)  # Refresh the instance to get any auto-generated fields
     return db_study_activity
 
+# CRUD function to get study sessions by study activity ID with pagination
+def get_study_sessions_by_activity(db: Session, study_activity_id: int, skip: int = 0, limit: int = 10):
+      
+    results = (
+        db.query(
+            models.StudySession.id,
+            models.StudySession.group_id,
+            models.Group.name.label("group_name"),
+            models.StudySession.study_activity_id.label("activity_id"),
+            models.StudySession.created_at.label("start_time"),
+            func.count(models.WordReviewItems.id).label("review_items_count")
+        )
+        .join(models.Group, models.Group.id == models.StudySession.group_id)
+        .outerjoin(models.WordReviewItems, models.WordReviewItems.study_session_id == models.StudySession.id)
+        .filter(models.StudySession.study_activity_id == study_activity_id)  # activity_id comes from the URL path
+        .group_by(
+            models.StudySession.id,
+            models.StudySession.group_id,
+            models.Group.name,
+            models.StudySession.study_activity_id,
+            models.StudySession.created_at,
+        )
+        .all()
+    )
+    
+        # Ensure each result is correctly mapped to the StudySessionBase schema
+    return [
+        schemas.StudySessionBase(
+            id=session.id,
+            group_id=session.group_id,
+            group_name=session.group_name,
+            activity_id=study_activity_id,
+            start_time=session.start_time,  # Ensure start_time is set correctly
+            end_time=session.start_time,  # Placeholder for end_time
+            review_items_count=session.review_items_count,
+        )
+        for session in results
+    ]
 # Function to get the last study session (for dashboard)
 def get_last_study_session(db: Session):
     result = db.query(models.StudySession.id,

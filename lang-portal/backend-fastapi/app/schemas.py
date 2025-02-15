@@ -4,6 +4,12 @@ from datetime import datetime
 class ConfigDict:
     from_attributes = True
 
+# Pagination schema
+class Pagination(BaseModel):
+    current_page: int
+    total_pages: int
+    items_per_page: int
+
 # Base schema for Group
 class GroupBase(BaseModel):
     name: str
@@ -21,11 +27,14 @@ class Group(GroupBase):
 
 # Base schema for StudySession
 class StudySessionBase(BaseModel):
+    id: int
     group_id: int
-    session_name: str
-    created_at: datetime
-    study_activity_id: int
-
+    group_name: str
+    activity_id: int
+    start_time: datetime
+    end_time: datetime
+    review_items_count: int
+    
 # Schema for creating a new StudySession
 class StudySessionCreate(StudySessionBase):
     pass
@@ -106,7 +115,7 @@ class WordReviewItems(WordReviewItemsBase):
     class ConfigDict:
         from_attributes = True
 
-# dashboard/last_study_session
+        # dashboard/last_study_session
 class LastStudySession(BaseModel):
     id: int
     group_id: int

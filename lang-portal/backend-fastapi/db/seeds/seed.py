@@ -67,11 +67,11 @@ def seed_data():
 
     # Add initial data for study sessions
     study_sessions = [
-        StudySession(group_id=1, session_name="Everyday Vocabulary Session", created_at=datetime.now(), study_activity_id=1),
-        StudySession(group_id=2, session_name="Animal Vocabulary Session", created_at=datetime.now(), study_activity_id=2),
-        StudySession(group_id=3, session_name="Weather & Nature Vocabulary Session", created_at=datetime.now(), study_activity_id=3),
-        StudySession(group_id=4, session_name="Food & Drink Vocabulary Session", created_at=datetime.now(), study_activity_id=4),
-        StudySession(group_id=5, session_name="Technology Vocabulary Session", created_at=datetime.now(), study_activity_id=5),
+        StudySession(group_id=1, created_at=datetime.now(), study_activity_id=1),
+        StudySession(group_id=2, created_at=datetime.now(), study_activity_id=2),
+        StudySession(group_id=3,  created_at=datetime.now(), study_activity_id=3),
+        StudySession(group_id=4, created_at=datetime.now(), study_activity_id=4),
+        StudySession(group_id=5,  created_at=datetime.now(), study_activity_id=5),
     ]
     db.add_all(study_sessions)
 

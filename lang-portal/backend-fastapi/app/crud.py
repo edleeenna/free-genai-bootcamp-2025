@@ -74,7 +74,7 @@ def get_study_session(db: Session, study_session_id: int):
             models.StudySession.id,
             models.StudySession.group_id,
             models.StudySession.created_at.label("start_time"),
-            models.StudySession.study_activity_id.label("activity_id"),
+            models.StudySession.study_activity_id.label("study_activity_id"),
             # Assuming end_time is the same as created_at for this example
             models.StudySession.created_at.label("end_time"),
             models.Group.name.label("group_name"),
@@ -93,7 +93,7 @@ def get_study_session(db: Session, study_session_id: int):
             "id": result.id,
             "group_id": result.group_id,
             "group_name": result.group_name,
-            "activity_id": result.activity_id,
+            "study_activity_id": result.study_activity_id,
             "start_time": result.start_time,
             "end_time": result.end_time,
             "review_items_count": result.review_items_count
@@ -126,7 +126,7 @@ def get_study_sessions(db: Session, skip: int = 0, limit: int = 10):
             id=session.id,
             group_id=session.group_id,
             group_name=session.group_name,
-            activity_id=session.study_activity_id,
+            study_activity_id=session.study_activity_id,
             start_time=session.created_at,  # Ensure start_time is set correctly
             end_time=session.created_at,  # Placeholder for end_time
             review_items_count=session.review_items_count,
@@ -134,12 +134,33 @@ def get_study_sessions(db: Session, skip: int = 0, limit: int = 10):
         for session in results
     ]
 
-# CRUD function to create a new study session
 def create_study_session(db: Session, study_session: schemas.StudySessionCreate):
-    db_study_session = models.StudySession(**study_session.model_dump())  # Map schema to model
+    # Create a StudySession model object from the input data
+    db_study_session = models.StudySession(
+        group_id=study_session.group_id,
+        created_at=study_session.created_at,
+        study_activity_id=study_session.study_activity_id,
+        # You can add any other required fields here, or set defaults as needed
+    )
+    
+    # Assuming you have a method to get the group name, you can populate it here
+    group = db.query(models.Group).filter(models.Group.id == study_session.group_id).first()
+    if group:
+        db_study_session.group_name = group.name  # Assign group name to the session
+
+    # Set default values for start_time, end_time, or calculate them
+    db_study_session.start_time = study_session.created_at  # You can adjust this as needed
+    db_study_session.end_time = study_session.created_at  # Adjust this based on your logic
+
+    # You can also calculate the review_items_count if it's based on some logic
+    db_study_session.review_items_count = 0  # Default, or calculate based on study activity
+
+    # Add the study session to the session and commit
     db.add(db_study_session)
-    db.commit()  # Commit the transaction to save the study session
-    db.refresh(db_study_session)  # Refresh the instance to get any auto-generated fields
+    db.commit()
+    db.refresh(db_study_session)  # Refresh to get any auto-generated fields like ID
+
+    # Return the created study session
     return db_study_session
 
 # CRUD function to get a single study activity by its ID

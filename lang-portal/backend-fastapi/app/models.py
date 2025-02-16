@@ -27,7 +27,6 @@ class StudySession(Base):
     __tablename__ = 'study_sessions'
     id = Column(Integer, primary_key=True, index=True, autoincrement=True)
     group_id = Column(Integer, ForeignKey('groups.id'))
-    session_name = Column(String, index=True)
     created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
     study_activity_id = Column(Integer, ForeignKey('study_activities.id'), nullable=False)
 

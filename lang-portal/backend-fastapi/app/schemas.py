@@ -31,14 +31,16 @@ class StudySessionBase(BaseModel):
     id: int
     group_id: int
     group_name: str
-    activity_id: int
+    study_activity_id: int
     start_time: datetime
     end_time: datetime
     review_items_count: int
     
 # Schema for creating a new StudySession
-class StudySessionCreate(StudySessionBase):
-    pass
+class StudySessionCreate(BaseModel):
+    group_id: int
+    created_at: datetime  # Required only for creation, not for the response
+    study_activity_id: int
 
 # Schema for reading a StudySession, includes id and ORM mode
 class StudySession(StudySessionBase):

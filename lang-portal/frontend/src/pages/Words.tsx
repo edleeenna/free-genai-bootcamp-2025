@@ -1,8 +1,9 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Volume, ChevronLeft, ChevronRight } from "lucide-react";
+import api from "../components/api/axios";
 import {
   Table,
   TableBody,
@@ -12,21 +13,27 @@ import {
   TableRow,
 } from "@/components/ui/table";
 
-const words = [
-  {
-    id: 1,
-    japanese: "食べる",
-    romaji: "taberu",
-    english: "to eat",
-    correct: 15,
-    wrong: 3,
-  },
-  // Add more words as needed
-];
 
 const Words = () => {
   const [currentPage, setCurrentPage] = useState(1);
-  const totalPages = 3;
+
+  const [totalPages, setTotalPages] = useState(1);
+  const [words, setWords] = useState([]);
+
+  useEffect(() => {
+    const fetchWords = async () => {
+      try {
+        const response = await api.get(`/words`);
+        setWords(response.data); // Directly set the data
+        console.log(response.data)
+        setTotalPages(1); // Change if backend has pagination
+      } catch (error) {
+        console.error("Error fetching words:", error);
+      }
+    };
+
+    fetchWords();
+  }, [currentPage]);
 
   return (
     <div className="animate-fade-in">
@@ -58,8 +65,8 @@ const Words = () => {
                 </TableCell>
                 <TableCell>{word.romaji}</TableCell>
                 <TableCell>{word.english}</TableCell>
-                <TableCell className="text-right text-green-600">{word.correct}</TableCell>
-                <TableCell className="text-right text-red-600">{word.wrong}</TableCell>
+                <TableCell className="text-right text-green-600">{word.correct_count}</TableCell>
+                <TableCell className="text-right text-red-600">{word.wrong_count}</TableCell>
               </TableRow>
             ))}
           </TableBody>

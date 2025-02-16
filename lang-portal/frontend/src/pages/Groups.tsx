@@ -1,8 +1,10 @@
-
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { ChevronLeft, ChevronRight } from "lucide-react";
+
+import api from "../components/api/axios";
+
 import {
   Table,
   TableBody,
@@ -12,47 +14,50 @@ import {
   TableRow,
 } from "@/components/ui/table";
 
-const groups = [
-  {
-    id: 1,
-    name: "Core Verbs",
-    wordCount: 50,
-  },
-  {
-    id: 2,
-    name: "Basic Adjectives",
-    wordCount: 30,
-  },
-];
-
 const Groups = () => {
   const [currentPage, setCurrentPage] = useState(1);
-  const totalPages = 1;
+  const [totalPages, setTotalPages] = useState(1);
+  const [wordGroups, setWordGroups] = useState([]);
+
+  useEffect(() => {
+    const fetchWordGroups = async () => {
+      try {
+        const response = await api.get(`/word-groups`);
+        setWordGroups(response.data); // Directly set the data
+        console.log(response.data)
+        setTotalPages(1); // Change if backend has pagination
+      } catch (error) {
+        console.error("Error fetching word groups:", error);
+      }
+    };
+
+    fetchWordGroups();
+  }, [currentPage]);
 
   return (
     <div className="animate-fade-in">
       <h1 className="text-4xl font-bold mb-8 text-japanese-800">Word Groups</h1>
-      
+
       <div className="rounded-md border">
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>Group Name</TableHead>
-              <TableHead className="text-right">Words</TableHead>
+              <TableHead>Word ID</TableHead>
+              <TableHead>Group ID</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
-            {groups.map((group) => (
-              <TableRow key={group.id}>
+            {wordGroups.map((group) => (
+              <TableRow key={group.word_id}>
+                <TableCell>{group.word_id}</TableCell>
                 <TableCell>
                   <Link
-                    to={`/groups/${group.id}`}
+                    to={`/groups/${group.group_id}`}
                     className="hover:text-japanese-600"
                   >
-                    {group.name}
+                    {group.group_id}
                   </Link>
                 </TableCell>
-                <TableCell className="text-right">{group.wordCount}</TableCell>
               </TableRow>
             ))}
           </TableBody>

@@ -1,20 +1,33 @@
 
 import { useParams } from "react-router-dom";
+import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Volume } from "lucide-react";
+import api from "../components/api/axios";
 
 const Word = () => {
   const { id } = useParams<{ id: string }>();
 
-  const word = {
-    id: Number(id),
-    japanese: "食べる",
-    romaji: "taberu",
-    english: "to eat",
-    correct: 15,
-    wrong: 3,
-  };
+  const [word, setWord] = useState(null); // Start with null
+
+  useEffect(() => {
+    const fetchWord = async () => {
+      try {
+        const response = await api.get(`/words/${id}`);
+        setWord(response.data); // Expect an object
+        console.log(response.data);
+      } catch (error) {
+        console.error("Error fetching word:", error);
+      }
+    };
+
+    fetchWord();
+  }, [id]); // Dependency array prevents infinite re-renders
+
+  if (!word) {
+    return <p>Loading...</p>; // Prevent rendering before data loads
+  }
 
   return (
     <div className="animate-fade-in space-y-8">
@@ -41,11 +54,11 @@ const Word = () => {
           <div className="flex gap-8">
             <div>
               <p className="text-sm font-medium text-muted-foreground">Correct</p>
-              <p className="text-lg text-green-600">{word.correct}</p>
+              <p className="text-lg text-green-600">{word.correct_count}</p>
             </div>
             <div>
               <p className="text-sm font-medium text-muted-foreground">Wrong</p>
-              <p className="text-lg text-red-600">{word.wrong}</p>
+              <p className="text-lg text-red-600">{word.wrong_count}</p>
             </div>
           </div>
         </CardContent>

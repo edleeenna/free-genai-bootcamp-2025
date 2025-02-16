@@ -29,3 +29,11 @@ def read_study_activity(study_activity_id: int, db: Session = Depends(get_db)):
     if db_study_activity is None:
         raise HTTPException(status_code=404, detail="Study activity not found")
     return db_study_activity
+
+@router.get("/study_activities/{study_activity_id}/study_sessions", response_model=list[schemas.StudySession])
+def read_study_sessions(study_activity_id: int, db: Session = Depends(get_db)):
+    db_study_activity = crud.get_study_activity(db, study_activity_id=study_activity_id)
+    if db_study_activity is None:
+        raise HTTPException(status_code=404, detail="Study activity not found")
+    study_sessions = crud.get_study_sessions_by_activity(db, study_activity_id=study_activity_id)
+    return study_sessions

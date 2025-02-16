@@ -36,6 +36,11 @@ pip install fastapi uvicorn sqlalchemy sqlite3
     python3 -m db.seeds.seed
     ```
 
+## Testing
+To run tests use the following command. This ensures that we are using the test.db and not the production words.db
 
+```sh
+TESTING=1 pytest tests/test_main.py;   
+```
 
 ## Issues

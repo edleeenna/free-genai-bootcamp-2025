@@ -7,7 +7,7 @@ client = TestClient(app)
 
 class TestStudySessions:
     def test_read_study_sessions(self, db_session):
-        response = client.get("/study_sessions/")
+        response = client.get("/study-sessions/")
         assert response.status_code == 200
         data = response.json()
         assert len(data) > 0
@@ -21,7 +21,7 @@ class TestStudySessions:
             assert "review_items_count" in item
 
     def test_read_study_session(self, db_session):
-        response = client.get("/study_sessions/1")
+        response = client.get("/study-sessions/1")
         assert response.status_code == 200
         data = response.json()
         assert "id" in data
@@ -33,13 +33,13 @@ class TestStudySessions:
         assert "review_items_count" in data
 
     def test_read_study_session_not_found(self, db_session):
-        response = client.get("/study_sessions/999")
+        response = client.get("/study-sessions/999")
         assert response.status_code == 404
         data = response.json()
         assert data["detail"] == "Study session not found"
 
     def test_get_words_for_study_session(self, db_session):
-        response = client.get("/study_sessions/1/words")
+        response = client.get("/study-sessions/1/words")
         assert response.status_code == 200
         data = response.json()
         assert len(data) > 0
@@ -48,7 +48,7 @@ class TestStudySessions:
             assert "romaji" in item
 
     def test_get_words_for_study_session_not_found(self, db_session):
-        response = client.get("/study_sessions/999/words")
+        response = client.get("/study-sessions/999/words")
         assert response.status_code == 404
         data = response.json()
         assert data["detail"] == "Words not found"

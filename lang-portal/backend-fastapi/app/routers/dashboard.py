@@ -5,7 +5,7 @@ from app.database import get_db
 
 router = APIRouter()
 
-@router.get("/dashboard/last_study_session", response_model=schemas.LastStudySession)
+@router.get("/dashboard/last-study-session", response_model=schemas.LastStudySession)
 def get_last_study_session(db: Session = Depends(get_db)):
     last_session = crud.get_last_study_session(db)
     if last_session is None:
@@ -13,10 +13,10 @@ def get_last_study_session(db: Session = Depends(get_db)):
     print(last_session) 
     return last_session
 
-@router.get("/dashboard/study_progress", response_model=schemas.StudyProgress)
+@router.get("/dashboard/study-progress", response_model=schemas.StudyProgress)
 def get_study_progress(db: Session = Depends(get_db)):
     return crud.get_study_progress(db)
 
-@router.get("/dashboard/quick_stats", response_model=schemas.QuickStats)
+@router.get("/dashboard/quick-stats", response_model=schemas.QuickStats)
 def get_quick_stats(db: Session = Depends(get_db)):
     return crud.get_quick_stats(db)

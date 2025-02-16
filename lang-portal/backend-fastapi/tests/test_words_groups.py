@@ -6,7 +6,7 @@ client = TestClient(app)
 
 class TestWordsGroups:
     def test_create_word_group(self, db_session):
-        response = client.post("/word_groups/", json={
+        response = client.post("/word-groups/", json={
             "word_id": 2,
             "group_id": 1
         })
@@ -16,7 +16,7 @@ class TestWordsGroups:
         assert data["group_id"] == 1
 
     def test_read_word_groups(self, db_session):
-        response = client.get("/word_groups/")
+        response = client.get("/word-groups/")
         assert response.status_code == 200
         data = response.json()
         assert len(data) > 0
@@ -25,7 +25,7 @@ class TestWordsGroups:
             assert "group_id" in item
 
     def test_read_word_group(self, db_session):
-        response = client.get("/word_groups/1")
+        response = client.get("/word-groups/1")
         assert response.status_code == 200
         data = response.json()
         assert "word_id" in data
@@ -33,7 +33,7 @@ class TestWordsGroups:
 
 
     def test_read_word_group_not_found(self, db_session):
-        response = client.get("/word_groups/999")
+        response = client.get("/word-groups/9999")
         assert response.status_code == 404
         data = response.json()
         assert data["detail"] == "Word group not found"

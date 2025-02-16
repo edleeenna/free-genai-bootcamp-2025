@@ -131,9 +131,11 @@ class WordReviewItems(WordReviewItemsBase):
 class LastStudySession(BaseModel):
     id: int
     group_id: int
-    created_at: datetime
-    study_activity_id: int
     group_name: str
+    study_activity_id: int
+    start_time: datetime
+    end_time: datetime
+    review_items_count: int
 
     class ConfigDict:
         from_attributes = True

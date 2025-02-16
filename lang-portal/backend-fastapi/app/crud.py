@@ -219,19 +219,30 @@ def get_study_sessions_by_activity(db: Session, study_activity_id: int, skip: in
     ]
 # Function to get the last study session (for dashboard)
 def get_last_study_session(db: Session):
-    result = db.query(models.StudySession.id,
-                       models.StudySession.group_id,
-                       models.StudySession.created_at,
-                       models.StudySession.study_activity_id,
-                       models.Group.name).join(models.Group).order_by(models.StudySession.created_at.desc()).first()
+    result = ( db.query(
+            models.StudySession.id,
+            models.StudySession.group_id,
+            models.StudySession.created_at,
+            models.StudySession.study_activity_id,
+            models.Group.name.label("group_name"),
+            func.count(models.WordReviewItems.id).label("review_items_count")
+        )
+        .join(models.Group)  # Join with Group to get group details
+        .outerjoin(models.WordReviewItems, models.WordReviewItems.study_session_id == models.StudySession.id)  # LEFT JOIN with WordReviewItems
+        .group_by(models.StudySession.id, models.Group.id)  # Group by study session and group to get counts
+        .order_by(models.StudySession.created_at.desc())
+        .first()
+    )
     if result:
     # Convert the result tuple to a dictionary
         return {
             "id": result.id,
             "group_id": result.group_id,
-            "created_at": result.created_at,
+            "group_name": result.group_name,
             "study_activity_id": result.study_activity_id,
-            "group_name": result.name
+            "start_time": result.created_at,
+            "end_time": result.created_at,
+            "review_items_count": result.review_items_count,
         }
     return None
 

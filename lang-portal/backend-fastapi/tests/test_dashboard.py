@@ -8,7 +8,7 @@ client = TestClient(app)
 class TestDashboard:
     
     def test_get_last_study_session(self, db_session):
-        response = client.get("/dashboard/last_study_session")
+        response = client.get("/dashboard/last-study-session")
         assert response.status_code == 200
         data = response.json()
         assert "id" in data
@@ -27,20 +27,20 @@ class TestDashboard:
         db_session.commit()
         
         # Assuming the database is empty or the last study session is not found
-        response = client.get("/dashboard/last_study_session")
+        response = client.get("/dashboard/last-study-session")
         assert response.status_code == 404
         data = response.json()
         assert data["detail"] == "No study sessions found"
 
     def test_get_study_progress(self, db_session):
-        response = client.get("/dashboard/study_progress")
+        response = client.get("/dashboard/study-progress")
         assert response.status_code == 200
         data = response.json()
         assert "total_words_studied" in data
         assert "total_available_words" in data
 
     def test_get_quick_stats(self, db_session):
-        response = client.get("/dashboard/quick_stats")
+        response = client.get("/dashboard/quick-stats")
         assert response.status_code == 200
         data = response.json()
         assert "success_rate" in data

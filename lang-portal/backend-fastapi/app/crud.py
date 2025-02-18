@@ -8,9 +8,32 @@ from app import models, schemas
 def get_word(db: Session, word_id: int):
     return db.query(models.Word).filter(models.Word.id == word_id).first()
 
-# CRUD function to get a list of words with pagination
-def get_words(db: Session, skip: int = 0, limit: int = 10):
-    return db.query(models.Word).offset(skip).limit(limit).all()
+def get_words(db: Session, page: int = 1, items_per_page: int = 10):
+    # Calculate skip (number of records to skip)
+    skip = (page - 1) * items_per_page
+
+    words = db.query(models.Word).offset(skip).limit(items_per_page).all()
+    total_count = db.query(models.Word).count()  # Get total word count
+
+    # Convert ORM objects to Pydantic models
+    word_items = [schemas.Word.model_validate(word, from_attributes=True) for word in words]
+
+    # Calculate total pages
+    total_pages = (total_count // items_per_page) + (1 if total_count % items_per_page > 0 else 0)
+
+    # Debugging logs
+    print(f"Fetching words for page={page}, items_per_page={items_per_page}, skip={skip}")
+    print(f"Total words in DB: {total_count}, Total pages: {total_pages}")
+
+    return schemas.WordsResponse(
+        items=word_items,
+        pagination=schemas.Pagination(
+            current_page=page,  # ✅ Fix: Return the actual page number
+            total_pages=total_pages,
+            items_per_page=items_per_page
+        )
+    )
+
 
 # CRUD function to create a new word in the database
 def create_word(db: Session, word: schemas.WordCreate):

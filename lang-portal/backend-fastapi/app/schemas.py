@@ -92,6 +92,10 @@ class WordsResponse(BaseModel):
     items: List[Word]
     pagination: Pagination
 
+
+    class ConfigDict:
+        from_attributes = True
+
 # Base schema for StudyActivity
 class StudyActivityBase(BaseModel):
     name: str

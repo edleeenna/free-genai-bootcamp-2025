@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -13,32 +12,37 @@ import {
   TableRow,
 } from "@/components/ui/table";
 
-
 const Words = () => {
   const [currentPage, setCurrentPage] = useState(1);
-
   const [totalPages, setTotalPages] = useState(1);
   const [words, setWords] = useState([]);
+  const itemsPerPage = 10; // Can adjust if needed
 
   useEffect(() => {
     const fetchWords = async () => {
       try {
-        const response = await api.get(`/words`);
-        setWords(response.data); // Directly set the data
-        console.log(response.data)
-        setTotalPages(1); // Change if backend has pagination
+        console.log(`Fetching data for page ${currentPage}`);
+        const response = await api.get(`/words`, {
+          params: {
+            page: currentPage, // Correct pagination parameter
+            items_per_page: itemsPerPage, // Ensure items per page is set
+          },
+        });
+        console.log("API response:", response.data); // Log the full response to inspect pagination
+        setWords(response.data.items); // Update the words state
+        setTotalPages(response.data.pagination.total_pages); // Update the total pages state
       } catch (error) {
         console.error("Error fetching words:", error);
       }
     };
 
     fetchWords();
-  }, [currentPage]);
+  }, [currentPage]); // Re-fetch data when the current page changes
 
   return (
     <div className="animate-fade-in">
       <h1 className="text-4xl font-bold mb-8 text-japanese-800">Words</h1>
-      
+
       <div className="rounded-md border">
         <Table>
           <TableHeader>

@@ -22,9 +22,9 @@ pip install fastapi uvicorn sqlalchemy sqlite3
 
 ## Usage
 
-1. Start the FastAPI server:
+1. Start the FastAPI server, running from the backend-fastapi folder:
     ```bash
-    uvicorn main:app --reload
+    uvicorn app.main:app --reload
     ```
 2. The API will be available at `http://127.0.0.1:8000`.
 3. Run migration script

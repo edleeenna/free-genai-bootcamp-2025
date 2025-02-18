@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.orm import Session
 from app import crud, models, schemas
 from app.database import SessionLocal, engine
@@ -18,9 +18,13 @@ def get_db():
 def create_word(word: schemas.WordCreate, db: Session = Depends(get_db)):
     return crud.create_word(db=db, word=word)
 
-@router.get("/words/", response_model=list[schemas.Word])
-def read_words(skip: int = 0, limit: int = 10, db: Session = Depends(get_db)):
-    words = crud.get_words(db, skip=skip, limit=limit)
+@router.get("/words/", response_model=schemas.WordsResponse)
+def read_words(
+    page: int = Query(1, alias="page"),  # Accept page as a query parameter
+    items_per_page: int = Query(10, alias="items_per_page"),  # Accept items_per_page as a query parameter
+    db: Session = Depends(get_db)
+):
+    words = crud.get_words(db, page=page, items_per_page=items_per_page)  # ✅ Pass query params
     return words
 
 @router.get("/words/{word_id}", response_model=schemas.Word)

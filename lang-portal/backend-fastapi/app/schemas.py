@@ -14,6 +14,8 @@ class Pagination(BaseModel):
 # Base schema for Group
 class GroupBase(BaseModel):
     name: str
+    word_count: int
+
 
 # Schema for creating a new Group
 class GroupCreate(GroupBase):
@@ -26,12 +28,22 @@ class Group(GroupBase):
     class ConfigDict:
         from_attributes = True
 
+class GroupsResponse(BaseModel):
+    items: List[Group]
+    pagination: Pagination
+
+
+    class ConfigDict:
+        from_attributes = True
+
+
 # Base schema for StudySession
 class StudySessionBase(BaseModel):
     id: int
     group_id: int
     group_name: str
     study_activity_id: int
+    study_activity_name: str
     start_time: datetime
     end_time: datetime
     review_items_count: int
@@ -45,6 +57,15 @@ class StudySessionCreate(BaseModel):
 # Schema for reading a StudySession, includes id and ORM mode
 class StudySession(StudySessionBase):
     id: int
+
+    class ConfigDict:
+        from_attributes = True
+
+
+class StudySessionResponse(BaseModel):
+    items: List[StudySession]
+    pagination: Pagination
+
 
     class ConfigDict:
         from_attributes = True
@@ -91,6 +112,10 @@ class WordGroup(WordGroupBase):
 class WordsResponse(BaseModel):
     items: List[Word]
     pagination: Pagination
+
+    class ConfigDict:
+        from_attributes = True
+
 
 # Base schema for StudyActivity
 class StudyActivityBase(BaseModel):

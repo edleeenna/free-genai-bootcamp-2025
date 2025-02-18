@@ -17,21 +17,27 @@ import {
 const Groups = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
-  const [wordGroups, setWordGroups] = useState([]);
+  const [wordGroups, setGroups] = useState([]);
+  const itemsPerPage = 10; // Can adjust if needed
 
   useEffect(() => {
-    const fetchWordGroups = async () => {
+    const fetchGroups = async () => {
       try {
-        const response = await api.get(`/word-groups`);
-        setWordGroups(response.data); // Directly set the data
-        console.log(response.data)
+        const response = await api.get(`/groups`, {
+          params: {
+            page: currentPage, // Correct pagination parameter
+            items_per_page: itemsPerPage, // Ensure items per page is set
+          },
+        });
+        setGroups(response.data.items); // Directly set the data
+        console.log(response.data.pagination.total_pages)
         setTotalPages(1); // Change if backend has pagination
       } catch (error) {
-        console.error("Error fetching word groups:", error);
+        console.error("Error fetching groups:", error);
       }
     };
 
-    fetchWordGroups();
+    fetchGroups();
   }, [currentPage]);
 
   return (
@@ -42,21 +48,22 @@ const Groups = () => {
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>Word ID</TableHead>
-              <TableHead>Group ID</TableHead>
+              <TableHead>Group Name</TableHead>
+              <TableHead>Word Count</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {wordGroups.map((group) => (
-              <TableRow key={group.word_id}>
-                <TableCell>{group.word_id}</TableCell>
-                <TableCell>
-                  <Link
-                    to={`/groups/${group.group_id}`}
+              <TableRow key={group.group_id}>
+
+                <TableCell>  <Link
+                    to={`/groups/${group.id}`}
                     className="hover:text-japanese-600"
-                  >
-                    {group.group_id}
-                  </Link>
+                  >{group.name}</Link></TableCell>
+                <TableCell>
+                
+                    {group.word_count}
+                
                 </TableCell>
               </TableRow>
             ))}

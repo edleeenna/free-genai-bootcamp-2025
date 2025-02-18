@@ -14,6 +14,8 @@ class Pagination(BaseModel):
 # Base schema for Group
 class GroupBase(BaseModel):
     name: str
+    word_count: int
+
 
 # Schema for creating a new Group
 class GroupCreate(GroupBase):
@@ -25,6 +27,15 @@ class Group(GroupBase):
 
     class ConfigDict:
         from_attributes = True
+
+class GroupsResponse(BaseModel):
+    items: List[Group]
+    pagination: Pagination
+
+
+    class ConfigDict:
+        from_attributes = True
+
 
 # Base schema for StudySession
 class StudySessionBase(BaseModel):
@@ -92,9 +103,9 @@ class WordsResponse(BaseModel):
     items: List[Word]
     pagination: Pagination
 
-
     class ConfigDict:
         from_attributes = True
+
 
 # Base schema for StudyActivity
 class StudyActivityBase(BaseModel):

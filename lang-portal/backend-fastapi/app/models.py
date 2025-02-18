@@ -22,6 +22,7 @@ class Group(Base):
     __tablename__ = 'groups'
     id = Column(Integer, primary_key=True, index=True, autoincrement=True)
     name = Column(String, index=True)
+    word_count = Column(Integer, default=0)
 
 class StudySession(Base):
     __tablename__ = 'study_sessions'

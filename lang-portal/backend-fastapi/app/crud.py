@@ -79,9 +79,31 @@ def create_word_group(db: Session, word_group: schemas.WordGroupCreate):
 def get_group(db: Session, group_id: int):
     return db.query(models.Group).filter(models.Group.id == group_id).first()
 
-# CRUD function to get a list of groups with pagination
-def get_groups(db: Session, skip: int = 0, limit: int = 10):
-    return db.query(models.Group).offset(skip).limit(limit).all()
+def get_groups(db: Session, page: int = 1, items_per_page: int = 10):
+    # Calculate skip (number of records to skip)
+    skip = (page - 1) * items_per_page
+
+    groups = db.query(models.Group).offset(skip).limit(items_per_page).all()  # Query paginated groups
+    total_count = db.query(models.Group).count()  # Get total number of groups
+
+    # Convert ORM objects to Pydantic models
+    group_items = [schemas.Group.model_validate(group, from_attributes=True) for group in groups]
+
+    # Calculate total pages
+    total_pages = (total_count // items_per_page) + (1 if total_count % items_per_page > 0 else 0)
+
+    # Debugging logs (can be removed later)
+    print(f"Fetching groups for page={page}, items_per_page={items_per_page}, skip={skip}")
+    print(f"Total groups in DB: {total_count}, Total pages: {total_pages}")
+
+    return schemas.GroupsResponse(
+        items=group_items,
+        pagination=schemas.Pagination(
+            current_page=page,  # Return the actual page number
+            total_pages=total_pages,
+            items_per_page=items_per_page,
+        )
+    )
 
 # CRUD function to create a new group
 def create_group(db: Session, group: schemas.GroupCreate):

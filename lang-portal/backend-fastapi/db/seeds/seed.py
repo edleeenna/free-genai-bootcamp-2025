@@ -35,15 +35,28 @@ def seed_data():
     ]
     db.add_all(words)
 
-    # Add initial data for groups (grouping by topics like animals, food, weather)
+  # Add initial data for groups (grouping by topics like animals, food, weather)
     groups = [
-        Group(name="Vocabulary - Everyday Objects"),
-        Group(name="Vocabulary - Animals"),
-        Group(name="Vocabulary - Weather & Nature"),
-        Group(name="Vocabulary - Food & Drink"),
-        Group(name="Vocabulary - Technology"),
+        Group(name="Vocabulary - Everyday Objects", word_count=42),
+        Group(name="Vocabulary - Animals", word_count=67),
+        Group(name="Vocabulary - Weather & Nature", word_count=35),
+        Group(name="Vocabulary - Food & Drink", word_count=89),
+        Group(name="Vocabulary - Technology", word_count=53),
+        Group(name="Vocabulary - Sports", word_count=48),
+        Group(name="Vocabulary - Emotions & Feelings", word_count=56),
+        Group(name="Vocabulary - Transportation", word_count=74),
+        Group(name="Vocabulary - Health & Medicine", word_count=61),
+        Group(name="Vocabulary - Education", word_count=38),
+        Group(name="Vocabulary - Music", word_count=50),
+        Group(name="Vocabulary - Art & Culture", word_count=29),
+        Group(name="Vocabulary - Business & Finance", word_count=65),
+        Group(name="Vocabulary - Politics & Government", word_count=59),
+        Group(name="Vocabulary - Science & Technology", word_count=72),
     ]
+
     db.add_all(groups)
+
+
 
     # Add initial data for word groups (words associated with specific topics)
     word_groups = [

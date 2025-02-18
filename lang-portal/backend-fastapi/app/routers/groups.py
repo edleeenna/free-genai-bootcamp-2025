@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.orm import Session
 from app import crud, models, schemas
 from app.database import SessionLocal, engine
@@ -18,11 +18,14 @@ def get_db():
 def create_group(group: schemas.GroupCreate, db: Session = Depends(get_db)):
 	return crud.create_group(db=db, group=group)
 
-@router.get("/groups/", response_model=list[schemas.Group])
-def read_groups(skip: int = 0, limit: int = 10, db: Session = Depends(get_db)):
-	groups = crud.get_groups(db, skip=skip, limit=limit)
-	return groups
-
+@router.get("/groups/", response_model=schemas.GroupsResponse)
+def read_groups(
+    page: int = Query(1, alias="page"),  # Accept page as a query parameter
+    items_per_page: int = Query(10, alias="items_per_page"),  # Accept items_per_page as a query parameter
+    db: Session = Depends(get_db)
+):
+    groups = crud.get_groups(db, page=page, items_per_page=items_per_page)  # Pass query params
+    return groups
 @router.get("/groups/{group_id}", response_model=schemas.Group)
 def read_group(group_id: int, db: Session = Depends(get_db)):
 	db_group = crud.get_group(db, group_id=group_id)

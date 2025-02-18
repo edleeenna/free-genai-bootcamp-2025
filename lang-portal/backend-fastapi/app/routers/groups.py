@@ -46,3 +46,20 @@ def read_group_words(
         raise HTTPException(status_code=404, detail="Words not found for the group")
     return db_words
     
+from fastapi import Query
+
+@router.get("/groups/{group_id}/study-sessions", response_model=schemas.StudySessionResponse)
+def read_study_sessions_by_group(
+    group_id: int,
+    page: int = Query(1, alias="page", ge=1),  # Page number must be at least 1
+    items_per_page: int = Query(10, alias="items_per_page", le=100),  # Max 100 per page
+    db: Session = Depends(get_db)
+):
+  
+    skip = (page - 1) * items_per_page
+    result = crud.get_study_sessions_by_group(db, group_id=group_id, skip=skip, limit=items_per_page)
+
+    if not result["items"]:
+        raise HTTPException(status_code=404, detail="No study sessions found for this group")
+
+    return result

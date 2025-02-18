@@ -1,8 +1,9 @@
 
-import { useState } from "react";
-import { Link } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { Link, useParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { ChevronLeft, ChevronRight } from "lucide-react";
+import api from "../components/api/axios";
 import {
   Table,
   TableBody,
@@ -11,21 +12,43 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import Words from "./Words";
 
-const sessions = [
-  {
-    id: 1,
-    activityName: "Adventure MUD",
-    groupName: "Core Verbs",
-    startTime: "2024-02-20 14:30",
-    endTime: "2024-02-20 15:00",
-    reviewItems: 25,
-  },
-];
 
-const Sessions = () => {
+const Sessions = ({studySessionId}) => {
+  const { id } = useParams<{ id: string }>(); // Get groupId from URL if it exists
+  const effectiveGroupId = studySessionId || id; // Use groupId prop or fallback to URL param
+
   const [currentPage, setCurrentPage] = useState(1);
-  const totalPages = 1;
+  const [totalPages, setTotalPages] = useState(1);
+  const [sessions, setSessions] = useState([]);
+  const itemsPerPage = 10; // Can adjust if needed
+
+  useEffect(() => {
+    const fetchSessions = async () => {
+      try {
+        const endpoint = effectiveGroupId
+          ? `/groups/${effectiveGroupId}/study-sessions`
+          : `/study-sessions`; // If groupId exists, fetch words for that group, else fetch all words
+
+        console.log(`Fetching data for group ${effectiveGroupId || "all sessions"} (page ${currentPage})`);
+        const response = await api.get(endpoint, {
+          params: {
+            page: currentPage, // Correct pagination parameter
+            items_per_page: itemsPerPage, // Ensure items per page is set
+          },
+        });
+        console.log("API response:", response.data); // Log the full response to inspect pagination
+        setSessions(response.data.items); // Update the words state
+        setTotalPages(response.data.pagination.total_pages); // Update the total pages state
+      } catch (error) {
+        console.error("Error fetching sessions:", error);
+      }
+    };
+
+    fetchSessions();
+  }, [currentPage, effectiveGroupId,id]); // Re-fetch data when current page or effectiveGroupId changes
+
 
   return (
     <div className="animate-fade-in">
@@ -35,6 +58,7 @@ const Sessions = () => {
         <Table>
           <TableHeader>
             <TableRow>
+              <TableHead>Session Id</TableHead>
               <TableHead>Activity</TableHead>
               <TableHead>Group</TableHead>
               <TableHead>Start Time</TableHead>
@@ -45,22 +69,30 @@ const Sessions = () => {
           <TableBody>
             {sessions.map((session) => (
               <TableRow key={session.id}>
-                <TableCell>{session.activityName}</TableCell>
-                <TableCell>
+                <TableCell>  
                   <Link
-                    to={`/groups/${session.id}`}
-                    className="hover:text-japanese-600"
-                  >
-                    {session.groupName}
+                    to={`/sessions/${session.id}`}
+                    className="hover:text-japanese-600">
+                    {session.id}
                   </Link>
+                  </TableCell>
+                <TableCell>{session.study_activity_name}</TableCell>
+                <TableCell>
+              
+                    {session.group_name}
+                 
                 </TableCell>
-                <TableCell>{session.startTime}</TableCell>
-                <TableCell>{session.endTime}</TableCell>
-                <TableCell className="text-right">{session.reviewItems}</TableCell>
+                <TableCell>{session.start_time}</TableCell>
+                <TableCell>{session.end_time}</TableCell>
+                <TableCell className="text-right">{session.review_items_count}</TableCell>
               </TableRow>
             ))}
           </TableBody>
         </Table>
+      
+
+ 
+
       </div>
 
       <div className="flex items-center justify-center space-x-4 mt-4">
@@ -84,6 +116,7 @@ const Sessions = () => {
           <ChevronRight className="h-4 w-4" />
         </Button>
       </div>
+    
     </div>
   );
 };

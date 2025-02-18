@@ -43,6 +43,7 @@ class StudySessionBase(BaseModel):
     group_id: int
     group_name: str
     study_activity_id: int
+    study_activity_name: str
     start_time: datetime
     end_time: datetime
     review_items_count: int
@@ -56,6 +57,15 @@ class StudySessionCreate(BaseModel):
 # Schema for reading a StudySession, includes id and ORM mode
 class StudySession(StudySessionBase):
     id: int
+
+    class ConfigDict:
+        from_attributes = True
+
+
+class StudySessionResponse(BaseModel):
+    items: List[StudySession]
+    pagination: Pagination
+
 
     class ConfigDict:
         from_attributes = True

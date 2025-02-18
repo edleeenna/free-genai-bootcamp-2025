@@ -141,12 +141,14 @@ def get_study_session(db: Session, study_session_id: int):
             models.StudySession.group_id,
             models.StudySession.created_at.label("start_time"),
             models.StudySession.study_activity_id.label("study_activity_id"),
+            models.StudyActivity.name.label("study_activity_name"),
             # Assuming end_time is the same as created_at for this example
             models.StudySession.created_at.label("end_time"),
             models.Group.name.label("group_name"),
             func.count(models.WordReviewItems.id).label("review_items_count")
         )
-        .join(models.Group)
+        .join(models.Group, models.Group.id == models.StudySession.group_id)
+        .join(models.StudyActivity, models.StudyActivity.id == models.StudySession.study_activity_id)
         .outerjoin(models.WordReviewItems, models.WordReviewItems.study_session_id == models.StudySession.id)
         .filter(models.StudySession.id == study_session_id)
         .group_by(models.StudySession.id, models.Group.id)
@@ -160,14 +162,19 @@ def get_study_session(db: Session, study_session_id: int):
             "group_id": result.group_id,
             "group_name": result.group_name,
             "study_activity_id": result.study_activity_id,
+            "study_activity_name": result.study_activity_name,
             "start_time": result.start_time,
             "end_time": result.end_time,
             "review_items_count": result.review_items_count
         }
     return None
 
-# CRUD function to get a list of study sessions with paginationfrom sqlalchemy import func
+# CRUD function to get a list of study sessions with pagination
 def get_study_sessions(db: Session, skip: int = 0, limit: int = 10):
+    # Get total count of study sessions
+    total_count = db.query(func.count(models.StudySession.id)).scalar()
+
+    # Fetch paginated study sessions
     results = (
         db.query(
             models.StudySession.id,
@@ -175,30 +182,90 @@ def get_study_sessions(db: Session, skip: int = 0, limit: int = 10):
             models.StudySession.created_at,
             models.StudySession.study_activity_id,
             models.Group.name.label("group_name"),
-            func.count(models.WordReviewItems.id).label("review_items_count")  # Count the review items
+            models.StudyActivity.name.label("study_activity_name"),
+            func.count(models.WordReviewItems.id).label("review_items_count")  # Count review items
         )
-        .join(models.Group)  # Join with Group to get group details
+        .join(models.Group, models.Group.id == models.StudySession.group_id)  # Join with Group
+        .join(models.StudyActivity, models.StudyActivity.id == models.StudySession.study_activity_id)  # Join with StudyActivity
         .outerjoin(models.WordReviewItems, models.WordReviewItems.study_session_id == models.StudySession.id)  # LEFT JOIN with WordReviewItems
-        .group_by(models.StudySession.id, models.Group.id)  # Group by study session and group to get counts
-        .order_by(models.StudySession.created_at.desc())  # Order by created_at in descending order
+        .group_by(models.StudySession.id, models.Group.id, models.StudyActivity.id)  # Group by required fields
+        .order_by(models.StudySession.created_at.desc())  # Order by most recent session
         .offset(skip)  # Apply pagination offset
         .limit(limit)  # Apply pagination limit
-        .all()  # Fetch the results
+        .all()  # Fetch results
     )
 
-    # Ensure each result is correctly mapped to the StudySessionBase schema
-    return [
-        schemas.StudySessionBase(
-            id=session.id,
-            group_id=session.group_id,
-            group_name=session.group_name,
-            study_activity_id=session.study_activity_id,
-            start_time=session.created_at,  # Ensure start_time is set correctly
-            end_time=session.created_at,  # Placeholder for end_time
-            review_items_count=session.review_items_count,
+    return {
+        "items": [
+            schemas.StudySessionBase(
+                id=session.id,
+                group_id=session.group_id,
+                group_name=session.group_name,
+                study_activity_id=session.study_activity_id,
+                study_activity_name=session.study_activity_name,
+                start_time=session.created_at,  # Start time from created_at
+                end_time=session.created_at,  # Placeholder for end_time
+                review_items_count=session.review_items_count,
+            )
+            for session in results
+        ],
+        "pagination": {
+            "current_page": (skip // limit) + 1,
+            "total_pages": (total_count + limit - 1) // limit,  # Calculate total pages
+            "items_per_page": limit,
+        },
+    }
+
+# CRUD function to get a single study session by its ID
+# CRUD function to get study sessions by group
+def get_study_sessions_by_group(
+    db: Session, group_id: int, skip: int = 0, limit: int = 10
+):
+    total_count = db.query(func.count(models.StudySession.id)).filter(models.StudySession.group_id == group_id).scalar()
+
+    results = (
+        db.query(
+            models.StudySession.id,
+            models.StudySession.group_id,
+            models.StudySession.created_at,
+            models.StudySession.study_activity_id,
+            models.Group.name.label("group_name"),
+            models.StudyActivity.name.label("study_activity_name"),  # Get study activity name
+            func.count(models.WordReviewItems.id).label("review_items_count")  # Count review items
         )
-        for session in results
-    ]
+        .join(models.Group, models.Group.id == models.StudySession.group_id)  # Join with Group to get group details
+        .join(models.StudyActivity, models.StudyActivity.id == models.StudySession.study_activity_id)  # Join with StudyActivity
+        .outerjoin(models.WordReviewItems, models.WordReviewItems.study_session_id == models.StudySession.id)  # LEFT JOIN with WordReviewItems
+        .filter(models.StudySession.group_id == group_id)  # Filter by group_id
+        .group_by(models.StudySession.id, models.Group.id, models.StudyActivity.id)  # Group by session, group, and study activity
+        .order_by(models.StudySession.created_at.desc())  # Order by most recent session
+        .offset(skip)  # Pagination offset
+        .limit(limit)  # Pagination limit
+        .all()
+    )
+
+    return {
+        "items": [
+            schemas.StudySessionBase(
+                id=session.id,
+                group_id=session.group_id,
+                group_name=session.group_name,
+                study_activity_id=session.study_activity_id,
+                study_activity_name=session.study_activity_name,  # Include study activity name
+                start_time=session.created_at,  # Start time from created_at
+                end_time=session.created_at,  # Placeholder for end_time
+                review_items_count=session.review_items_count,
+            )
+            for session in results
+        ],
+        "pagination": {
+            "current_page": (skip // limit) + 1,
+            "total_pages": (total_count + limit - 1) // limit,
+            "items_per_page": limit,
+        },
+    }
+
+
 
 def create_study_session(db: Session, study_session: schemas.StudySessionCreate):
     # Create a StudySession model object from the input data
@@ -311,12 +378,11 @@ def get_last_study_session(db: Session):
             "review_items_count": result.review_items_count,
         }
     return None
-
 def get_words_for_study_session(db: Session, study_session_id: int, page: int = 1, items_per_page: int = 20):
     # Calculate offset for pagination
     offset = (page - 1) * items_per_page
     
-    # Fetch words for the study session
+    # Fetch words for the study session with basic join and filter to debug
     words = (
         db.query(
             models.Word.id,
@@ -324,15 +390,25 @@ def get_words_for_study_session(db: Session, study_session_id: int, page: int = 
             models.Word.romaji,
             models.Word.english,
             models.Word.correct_count,
-            models.Word.wrong_count
+            models.Word.wrong_count,
+            models.Group.name.label("group_name"),
         )
         .join(models.WordReviewItems, models.WordReviewItems.word_id == models.Word.id)
-        .filter(models.WordReviewItems.study_session_id == study_session_id)
+        .join(models.StudySession, models.StudySession.id == models.WordReviewItems.study_session_id)
+        .join(models.Group, models.Group.id == models.StudySession.group_id)  # Join with Group via StudySession
+        .filter(models.StudySession.id == study_session_id)  # Only filter by study_session_id first
         .offset(offset)
         .limit(items_per_page)
         .all()
     )
     
+    # Add a debug statement to print out the words for this query
+    print(f"Found {len(words)} words for study session ID: {study_session_id}")
+    
+    return words
+
+
+
       # Return a list of WordBase schemas, but use tuple indexing to access columns
     return [
         schemas.WordBase(

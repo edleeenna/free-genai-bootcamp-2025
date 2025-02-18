@@ -113,6 +113,27 @@ def create_group(db: Session, group: schemas.GroupCreate):
     db.refresh(db_group)  # Refresh the instance to get any auto-generated fields
     return db_group
 
+def get_group_words(db: Session, group_id: int, page: int = 1, items_per_page: int = 10):
+    # Calculate skip (number of records to skip)
+    skip = (page - 1) * items_per_page
+
+    words = db.query(models.Word).join(models.WordGroup, models.Word.id == models.WordGroup.word_id).filter(models.WordGroup.group_id == group_id).offset(skip).limit(items_per_page).all()
+    
+    total_count = db.query(models.Word).join(models.WordGroup, models.Word.id == models.WordGroup.word_id).filter(models.WordGroup.group_id == group_id).count()
+
+    # Calculate total pages
+    total_pages = (total_count // items_per_page) + (1 if total_count % items_per_page > 0 else 0)
+
+    return {
+        "items": words,
+        "pagination": {
+            "current_page": page,
+            "total_pages": total_pages,
+            "items_per_page": items_per_page
+        }
+    }
+
+
 def get_study_session(db: Session, study_session_id: int):
     result = (
         db.query(

@@ -34,6 +34,7 @@ pip install fastapi uvicorn sqlalchemy sqlite3
 4. Seed the database
     ```sh
     python3 -m db.seeds.seed
+
     ```
 
 ## Testing
@@ -42,5 +43,9 @@ To run tests use the following command. This ensures that we are using the test.
 ```sh
 TESTING=1 pytest    
 ```
+
+If testing a route that includes pagination in browser use the following as an example of how to structure request
+
+localhost:8000/groups/?page=2&items_per_page=10
 
 ## Issues

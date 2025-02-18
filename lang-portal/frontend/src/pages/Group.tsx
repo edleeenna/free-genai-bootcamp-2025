@@ -30,7 +30,8 @@ const Group = () => {
   return (
     <div className="animate-fade-in">
       <h1 className="text-4xl font-bold mb-8 text-japanese-800">{group.name}</h1>
-      <Words />
+      {/* Pass the groupId as a prop to Words */}
+      <Words groupId={id} />
     </div>
   );
 };

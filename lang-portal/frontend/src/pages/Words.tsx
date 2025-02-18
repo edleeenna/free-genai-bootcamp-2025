@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Volume, ChevronLeft, ChevronRight } from "lucide-react";
 import api from "../components/api/axios";
@@ -12,7 +12,10 @@ import {
   TableRow,
 } from "@/components/ui/table";
 
-const Words = () => {
+const Words = ({ groupId }) => {
+  const { id } = useParams<{ id: string }>(); // Get groupId from URL if it exists
+  const effectiveGroupId = groupId || id; // Use groupId prop or fallback to URL param
+
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [words, setWords] = useState([]);
@@ -21,8 +24,12 @@ const Words = () => {
   useEffect(() => {
     const fetchWords = async () => {
       try {
-        console.log(`Fetching data for page ${currentPage}`);
-        const response = await api.get(`/words`, {
+        const endpoint = effectiveGroupId
+          ? `/groups/${effectiveGroupId}/words`
+          : `/words`; // If groupId exists, fetch words for that group, else fetch all words
+
+        console.log(`Fetching data for group ${effectiveGroupId || "all words"} (page ${currentPage})`);
+        const response = await api.get(endpoint, {
           params: {
             page: currentPage, // Correct pagination parameter
             items_per_page: itemsPerPage, // Ensure items per page is set
@@ -37,7 +44,7 @@ const Words = () => {
     };
 
     fetchWords();
-  }, [currentPage]); // Re-fetch data when the current page changes
+  }, [currentPage, effectiveGroupId]); // Re-fetch data when current page or effectiveGroupId changes
 
   return (
     <div className="animate-fade-in">

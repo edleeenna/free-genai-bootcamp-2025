@@ -4,3 +4,4 @@ lang-portal/frontend/node_modules/
 
 .pytest_cache/
 node_modules
+response.json

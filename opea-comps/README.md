@@ -23,11 +23,11 @@ ipconfig getifaddr en0
 
 Or you can try this way `=$(hostname -I | awk '{print $1}')`
 
-export LLM_ENDPOINT_PORT=8008
+export LLM_ENDPOINT_PORT=9000
 export no_proxy=localhost,127.0.0.1
 export LLM_MODEL_ID=llama3.2:1b
 export host_ip=192.168.0.178
-docker-compose up
+docker compose up
 
 ### Ollama API
 
@@ -38,14 +38,14 @@ https://github.com/ollama/ollama/blob/main/docs/api.md
 ### Pull a model
 
 ``` sh
-curl http://localhost:8008/api/pull -d '{
+curl http://localhost:9000/api/pull -d '{
   "model": "llama3.2:1b"
 }'
 ```
 
 ### Generate a request
 ```sh
-curl http://localhost:8008/api/generate -d '{
+curl http://localhost:9000/api/generate -d '{
   "model": "llama3.2:1b",
   "prompt": "Why is the sky blue?"
 }'
@@ -68,3 +68,5 @@ A It does not appear so. The ollama CLI might be running multiple APIs so you ne
 Q Will the model be downloaded in the container? and does that mean the model will delete when the model stops running?
 
 A the model will download into the container and vanish when the container stop running. You need to mount a local drive and there is probably more work to be done.
+
+Q For LLM service which can do text-generation it suggests it will only work with TGI/vLLM and all you have to do is have it running. Does TGI and vLLM have a standardised API or is there code to detect which one is running? Do we really have ot use Xeon or Guadi processer. 

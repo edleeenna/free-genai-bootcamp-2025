@@ -1,0 +1,28 @@
+words.db
+
+lang-portal/frontend/node_modules/
+
+.pytest_cache/
+node_modules
+response.json
+
+*.env
+
+package-lock.json
+
+# Node.js
+*node_modules/
+package-lock.json
+pnpm-lock.yaml
+yarn.lock
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+venv/
+
+# VS Code
+.vscode/
+ignoreme.md

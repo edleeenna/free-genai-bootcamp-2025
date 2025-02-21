@@ -1,7 +1,0 @@
-{
-    "python.testing.pytestArgs": [
-        "lang-portal"
-    ],
-    "python.testing.unittestEnabled": false,
-    "python.testing.pytestEnabled": true
-}

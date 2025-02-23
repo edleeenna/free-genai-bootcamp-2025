@@ -1,0 +1,5 @@
+sentence-transformers
+chromadb
+youtube_transcript_api
+boto3
+streamlit

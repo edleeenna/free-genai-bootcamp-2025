@@ -47,3 +47,21 @@ Run the backend with the following command
 ```sh
  uvicorn main:app --reload
 ```
+
+### AWS Credentials
+Boto3 will automatically use credentials from ~/.aws/credentials.
+```python
+import boto3
+
+# Initialize Bedrock client
+bedrock_client = boto3.client("bedrock-runtime", region_name="us-east-1")
+```
+
+You can also set credentials via environment variables:
+There are two ways to handle AWS credentials
+
+```sh
+export AWS_ACCESS_KEY_ID="your-access-key"
+export AWS_SECRET_ACCESS_KEY="your-secret-key"
+export AWS_REGION="us-east-1"
+```

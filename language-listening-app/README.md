@@ -23,3 +23,27 @@ Pull the youtube content, and use that to generate out similar style listening c
 - AI Coding Assistant eg. Amazon Developer Q, Windsurf, Cursor, Github Copilot
 - Frontend eg. Streamlit.
 - Guardrails
+
+## How to run
+
+### Install requirements
+
+```sh
+pip install -r requirements.txt
+```
+
+### Frontend
+
+Run the frontend with the following command
+
+```sh
+streamlit run language-listening-app/frontend/main.py
+```
+
+### Backend
+
+Run the backend with the following command
+ uvicorn main:app --reload
+```sh
+ uvicorn main:app --reload
+```

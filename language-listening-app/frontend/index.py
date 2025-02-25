@@ -4,7 +4,7 @@ import requests
 # Backend API Endpoint (Update this if running on a different host)
 BACKEND_URL = "http://localhost:8000"
 
-st.title("Language Listening Comprehension App 🎧📖")
+st.title("Japanese Learning Assistant 🎧📖")
 
 # Search Bar for Transcripts
 query = st.text_input("🔍 Search for a transcript (e.g., 'conversation about travel'):")
